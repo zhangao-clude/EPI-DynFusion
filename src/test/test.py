@@ -7,10 +7,9 @@ from sklearn.metrics import roc_auc_score, average_precision_score, matthews_cor
 from model_torch import myModel_concat_new as myModel
 from torch.utils.data import DataLoader, TensorDataset
 
-# 确保使用CUDA
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-# 参数设置
+
 max_len_en = 3000
 max_len_pr = 2000
 nwords = 4097
@@ -41,17 +40,17 @@ def evaluate_model(model, data_loader, device):
 
     return auc, aupr, mcc, f1, precision, recall
 
-# 数据集名称
+
 # names = ['GM12878', 'HUVEC', 'HeLa-S3', 'IMR90', 'K562', 'NHEK']
 names = ['HMEC']
 
 
 
-# 初始化模型并加载权重
+
 model = myModel(max_len_en, max_len_pr, nwords, emb_dim).to(device)
 model.load_state_dict(torch.load("model_DynFusionEPI/HMEC_epoch_16.pth"))
 model.eval()
-# 评估
+
 with torch.no_grad():
     for name in names:
         data_dir = '../data1/%s/' % name
@@ -59,16 +58,16 @@ with torch.no_grad():
         # test_data = np.load("/root/lanyun-fs/IMR90_test_new.npz")
         X_en_tes, X_pr_tes, y_tes = test_data['X_en_tes'], test_data['X_pr_tes'], test_data['y_tes']
 
-        # 将数据转换为PyTorch张量
+        
         X_en_tes = torch.tensor(X_en_tes, dtype=torch.long)
         X_pr_tes = torch.tensor(X_pr_tes, dtype=torch.long)
         y_tes = torch.tensor(y_tes, dtype=torch.float32)
 
-        # 创建数据加载器
+        
         test_dataset = TensorDataset(X_en_tes, X_pr_tes, y_tes)
         test_loader = DataLoader(test_dataset, batch_size=32, shuffle=False)
 
-        print(f"****************在{name}细胞系上测试模型****************")
+
 
         auc, aupr, mcc, f1, precision, recall = evaluate_model(model, test_loader, device)
 
