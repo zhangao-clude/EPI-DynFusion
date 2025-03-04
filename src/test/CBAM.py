@@ -10,7 +10,6 @@ class CBAMLayer(nn.Module):
         # channel attention 压缩为1
         self.max_pool = nn.AdaptiveMaxPool1d(1)
         self.avg_pool = nn.AdaptiveAvgPool1d(1)
-        self.SELayer = SE(channel, reduction)
         # shared MLP
         self.mlp = nn.Sequential(
             # Conv1d比Linear方便操作
